@@ -39,7 +39,7 @@ public class Main {
       while ((msg = bf.readLine()) != null) {
           System.out.println("Client sent: " + msg);
           if(msg.contains("ping")) {
-              writer.println("+PONG\\r");
+              writer.println("+PONG\r");
               writer.flush();
               return;
           }

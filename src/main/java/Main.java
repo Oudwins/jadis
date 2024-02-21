@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -16,7 +16,17 @@ public class Main {
           serverSocket.setReuseAddress(true);
           // Wait for connection from client.
           clientSocket = serverSocket.accept();
-          System.out.println("Client Connected?");
+          System.out.println("Client connected " + clientSocket);
+
+          // INPUT
+          BufferedReader data = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+          String msg = data.readLine();
+          System.out.println("Client sent: " + msg);
+
+          // Response
+            OutputStream out = clientSocket.getOutputStream();
+            PrintWriter writer = new PrintWriter(out, true);
+            writer.println("+PONG\\r\\n");
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
         } finally {

@@ -40,6 +40,8 @@ public class Main {
           System.out.println("Client sent: " + msg);
           if(msg.contains("PING")) {
               writer.println("+PONG\\r");
+              writer.flush();
+              return;
           }
       }
   }

@@ -39,10 +39,10 @@ public class Main {
       while ((msg = bf.readLine()) != null) {
           System.out.println("Client sent: " + msg);
 //          if(msg.igno("PING")) {
-              writer.println("+PONG\\r");
-              writer.flush();
 //              return;
 //          }
       }
+      writer.println("+PONG\\r");
+      writer.flush();
   }
 }

@@ -38,11 +38,11 @@ public class Main {
       String msg;
       while ((msg = bf.readLine()) != null) {
           System.out.println("Client sent: " + msg);
-          if(msg.contains("PING")) {
+//          if(msg.igno("PING")) {
               writer.println("+PONG\\r");
               writer.flush();
-              return;
-          }
+//              return;
+//          }
       }
   }
 }

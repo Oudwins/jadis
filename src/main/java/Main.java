@@ -41,7 +41,6 @@ public class Main {
           if(msg.contains("ping")) {
               writer.println("+PONG\r");
               writer.flush();
-              return;
           }
       }
   }

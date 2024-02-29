@@ -68,7 +68,7 @@ public class Main {
                                     break;
                                 case "echo":
                                     if (!req.isEmpty()) {
-                                        String rMsg = (String) req.get(1);
+                                        String rMsg = (String) req.get(0);
                                         res = "$" + rMsg.length() + "\r\n" + rMsg;
                                     }
                                     res = res + "\r\n";

@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -14,11 +15,14 @@ public class Main {
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
-        int port = 6379;
+        serverWithConcurrentEventLoop();
+    }
+
+    private static void serverWithConcurrentEventLoop() {
 
         try {
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
-            serverSocket.socket().bind(new InetSocketAddress("localhost", port));
+            serverSocket.socket().bind(new InetSocketAddress(Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
             serverSocket.configureBlocking(false);
 
             Selector selector = Selector.open();
@@ -63,6 +67,21 @@ public class Main {
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
+        }
+    }
+
+    private static void serverWithoutConcurrency() {
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(Protocol.DEFAULT_PORT);
+            System.out.println("TCP Echo Server is running on port " + Protocol.DEFAULT_PORT);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("New client connected: " + clientSocket);
+                handleClient(clientSocket);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

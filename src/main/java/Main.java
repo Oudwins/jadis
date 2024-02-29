@@ -65,6 +65,7 @@ public class Main {
                             switch (cmd) {
                                 case "ping":
                                     client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
+                                    break;
                                 case "echo":
                                     if (!req.isEmpty()) {
                                         String rMsg = (String) req.get(1);

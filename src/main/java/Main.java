@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class Main {
                             client.register(selector, SelectionKey.OP_READ);
                         } else if (key.isReadable()) {
                             SocketChannel client = (SocketChannel) key.channel();
-                            ByteBuffer buf = ByteBuffer.allocate(1024);
+                            ByteBuffer buf = ByteBuffer.allocate(Protocol.DEFAULT_MAX_BULK_STRING_BYTES);
                             int bytesRead = client.read(buf);
                             if (bytesRead == -1) {
                                 System.out.println("Something went wrong");
@@ -53,8 +54,20 @@ public class Main {
                             }
                             // to start reading
                             buf.flip();
+                            ByteBuffer buf2 = buf.duplicate();
                             String msg = StandardCharsets.UTF_8.decode(buf).toString();
                             System.out.println("Your message was: " + msg);
+                            ArrayList<Object> req = Protocol.parseRequest(buf2);
+                            String cmd = (String) req.get(0);
+                            switch (cmd.toLowerCase()) {
+                                case "ping":
+                                    client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
+                                case "echo":
+                                    String rMsg = (String) req.get(1);
+                                    String res = "$" + rMsg.length() + "\r\n" + rMsg + "\r\n";
+                                    client.write(ByteBuffer.wrap(res.getBytes(StandardCharsets.UTF_8)));
+                            }
+                            System.out.println(req);
                             if (msg.toLowerCase().contains("ping")) {
                                 client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
                             }

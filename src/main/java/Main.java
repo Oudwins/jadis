@@ -58,19 +58,30 @@ public class Main {
                             String msg = StandardCharsets.UTF_8.decode(buf).toString();
                             System.out.println("Your message was: " + msg);
                             ArrayList<Object> req = Protocol.parseRequest(buf2);
-                            String cmd = (String) req.get(0);
-                            switch (cmd.toLowerCase()) {
+                            System.out.println(req);
+                            String cmd = ((String) req.removeFirst()).toLowerCase();
+                            String res = "";
+                            System.out.println("CHECKING FOR COMMAND: " + cmd);
+                            switch (cmd) {
                                 case "ping":
                                     client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
                                 case "echo":
-                                    String rMsg = (String) req.get(1);
-                                    String res = "$" + rMsg.length() + "\r\n" + rMsg + "\r\n";
-                                    client.write(ByteBuffer.wrap(res.getBytes(StandardCharsets.UTF_8)));
+                                    if (!req.isEmpty()) {
+                                        String rMsg = (String) req.get(1);
+                                        res = "$" + rMsg.length() + "\r\n" + rMsg;
+                                    }
+                                    res = res + "\r\n";
+                                    break;
+                                case "info":
+                                    System.out.println("GETS HERE?");
+                                    res = "*2\\r\\n$5\\r\\nhello\\r\\n$5\\r\\nworld\\r\\n";
+                                    break;
+                                default:
+                                    System.out.println("GETS TO DEFAULT?");
+                                    res = "-command not implemented\r\n";
                             }
-                            System.out.println(req);
-                            if (msg.toLowerCase().contains("ping")) {
-                                client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
-                            }
+
+                            client.write(ByteBuffer.wrap(res.getBytes(StandardCharsets.UTF_8)));
                         } else if (key.isWritable()) {
                             System.out.println("writable");
                         }

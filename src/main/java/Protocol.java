@@ -29,12 +29,26 @@ public final class Protocol {
     public static final byte[] POSITIVE_INFINITY_BYTES = "+inf".getBytes();
     public static final byte[] NEGATIVE_INFINITY_BYTES = "-inf".getBytes();
 
-    public static final byte[] TERMINATOR = "\r\n".getBytes(DEFAULT_CHARSET);
+    public static final String TERMINATOR = "\r\n";
 
 
     private Protocol() {
     }
 
+    public static String parseResponseString(String res) {
+        if (res == null) {
+            return "$-1" + TERMINATOR;
+        }
+        return "$" + res.length() + TERMINATOR + res + TERMINATOR;
+    }
+
+    public static String parseResponseError(String e) {
+        return "-" + e + TERMINATOR;
+    }
+
+    public static String parseResponseSimple(String s) {
+        return "+" + s + TERMINATOR;
+    }
 
     public static ArrayList<Object> parseRequest(Rbuf buf) {
 

@@ -8,9 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,7 +18,7 @@ public class Main {
     }
 
     private static void serverWithConcurrentEventLoop() {
-
+        Map<String, String> rStore = new HashMap<>();
         try {
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
             serverSocket.socket().bind(new InetSocketAddress(Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
@@ -60,7 +58,7 @@ public class Main {
                             ArrayList<Object> req = Protocol.parseRequest(new Rbuf(buf2));
                             System.out.println(req);
                             String cmd = ((String) req.removeFirst()).toLowerCase();
-                            String res = "";
+                            String res = "-command not implemented\r\n";
                             System.out.println("CHECKING FOR COMMAND: " + cmd);
                             switch (cmd) {
                                 case "ping":
@@ -69,13 +67,29 @@ public class Main {
                                 case "echo":
                                     if (!req.isEmpty()) {
                                         String rMsg = (String) req.get(0);
-                                        res = "$" + rMsg.length() + "\r\n" + rMsg;
+                                        res = Protocol.parseResponseString(rMsg);
+                                    } else {
+                                        res = Protocol.parseResponseString(null);
                                     }
-                                    res = res + "\r\n";
                                     break;
-                                case "info":
-                                    System.out.println("GETS HERE?");
-                                    res = "*2\\r\\n$5\\r\\nhello\\r\\n$5\\r\\nworld\\r\\n";
+                                case "set":
+                                    System.out.println("SET COMMAND FIRED -> " + req.size());
+                                    if (req.size() == 2) {
+                                        String rKey = (String) req.removeFirst();
+                                        String rValue = (String) req.removeFirst();
+                                        rStore.put(rKey, rValue);
+                                        res = Protocol.parseResponseSimple("OK");
+                                    } else {
+                                        res = Protocol.parseResponseError("Invalid number of arguments for set command");
+                                    }
+                                    break;
+                                case "get":
+                                    if (req.size() == 1) {
+                                        String rKey = (String) req.removeFirst();
+                                        res = Protocol.parseResponseString(rStore.get(rKey));
+                                    } else {
+                                        res = Protocol.parseResponseError("Invalid number of arguments for get command");
+                                    }
                                     break;
                                 default:
                                     System.out.println("GETS TO DEFAULT?");

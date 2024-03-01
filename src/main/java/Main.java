@@ -62,7 +62,7 @@ public class Main {
                             System.out.println("CHECKING FOR COMMAND: " + cmd);
                             switch (cmd) {
                                 case "ping":
-                                    client.write(ByteBuffer.wrap("+PONG\r\n".getBytes(StandardCharsets.UTF_8)));
+                                    res = Protocol.parseResponseSimple("PONG");
                                     break;
                                 case "echo":
                                     if (!req.isEmpty()) {

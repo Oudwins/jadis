@@ -1,6 +1,5 @@
 import com.sun.jdi.request.InvalidRequestStateException;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public final class Protocol {
     }
 
 
-    public static ArrayList<Object> parseRequest(ByteBuffer buf) {
+    public static ArrayList<Object> parseRequest(Rbuf buf) {
 
         final byte b = buf.get();
 
@@ -51,7 +50,7 @@ public final class Protocol {
     }
 
 
-    public static Object process(ByteBuffer buf) {
+    public static Object process(Rbuf buf) {
         final byte b = buf.get();
         switch (b) {
             case PLUS_BYTE:
@@ -69,11 +68,8 @@ public final class Protocol {
         }
     }
 
-    public static ArrayList<Object> processArray(ByteBuffer buf) {
-        final int elements = Character.getNumericValue(buf.get());
-        // TERMINATOR
-        buf.get();
-        buf.get();
+    public static ArrayList<Object> processArray(Rbuf buf) {
+        final int elements = Integer.parseInt(new String(buf.readChunk()));
 
         ArrayList<Object> list = new ArrayList<>();
         for (int i = 0; i < elements; i++) {
@@ -83,30 +79,36 @@ public final class Protocol {
         return list;
     }
 
-    public static String processBulkString(ByteBuffer buf) {
-        final int chars = Character.getNumericValue(buf.get());
+    public static String processBulkString(Rbuf buf) {
+        System.out.println(StandardCharsets.UTF_8.decode(buf.duplicate()).toString());
+        System.out.println(StandardCharsets.UTF_8.decode(buf.duplicate()).toString());
+        final int chars = Integer.parseInt((new String(buf.readChunk())));
         // terminator
-        buf.get();
-        buf.get();
+        System.out.println("Attempting to read n chars: " + chars);
         byte[] sbytes = new byte[chars];
         buf.get(sbytes, 0, chars);
         String s = Rencoder.decode(sbytes);
+
         // terminator
         buf.get();
         buf.get();
+
         return s;
     }
 
-    public static String processSimpleString(ByteBuffer buf) {
+    public static String processSimpleString(Rbuf buf) {
+        // todo need ot differentiate between bulk & simple strigns and errors
         return "testing";
     }
 
-    public static String processError(ByteBuffer buf) {
-        return "testing";
+    public static String processError(Rbuf buf) {
+        // todo error instance
+        return new String(buf.readChunk());
     }
 
-    public static Integer processInt(ByteBuffer buf) {
-        return 1;
+    public static Integer processInt(Rbuf buf) {
+
+        return Integer.parseInt(new String(buf.readChunk()));
     }
 
     public static byte[] toByteArray(final double value) {
@@ -118,4 +120,5 @@ public final class Protocol {
             return Rencoder.encode(String.valueOf(value));
         }
     }
+
 }

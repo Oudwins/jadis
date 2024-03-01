@@ -57,7 +57,7 @@ public class Main {
                             ByteBuffer buf2 = buf.duplicate();
                             String msg = StandardCharsets.UTF_8.decode(buf).toString();
                             System.out.println("Your message was: " + msg);
-                            ArrayList<Object> req = Protocol.parseRequest(buf2);
+                            ArrayList<Object> req = Protocol.parseRequest(new Rbuf(buf2));
                             System.out.println(req);
                             String cmd = ((String) req.removeFirst()).toLowerCase();
                             String res = "";

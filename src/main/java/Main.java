@@ -92,6 +92,7 @@ public class Main {
                                             ms = (Integer) oMS;
                                         }
                                         Memory.set(rKey, rValue, ms);
+                                        res = Protocol.parseResponseSimple("OK");
                                     } else {
                                         res = Protocol.parseResponseError("Invalid number of arguments for set command");
                                     }

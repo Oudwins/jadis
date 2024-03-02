@@ -1,35 +1,45 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/0970cdd7-08b8-4183-a8ed-a13a1e6a071a)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Jadis
 
-This is a starting point for Java solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
+A reimplementation of the Redis in memory database using java.
+This was created purely for fun as a good way to get a better understanding of this brilliant database.
 
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
+## About the implementation
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+Unlike many Redis reimplementations Jadis does not use threads to handle concurrent requests. Just like Redis, Jadis is
+single threaded.
+It takes advantage of an event loop (implemented through the java NIO package) to handle concurrent requests without the
+possibility of race conditions.
+One of the most interesting parts of this project is the implementation of the Redis Serialization protocol which can be
+found in the Protocol file.
 
-# Passing the first stage
+This was also one of the first piece of Java code I had ever written, therefore I apologize if it's not very idiomatic.
 
-The entry point for your Redis implementation is in `src/main/java/Main.java`.
-Study and uncomment the relevant code, and push your changes to pass the first
-stage:
+## How to use
 
-```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
+Step 1: Clone this repo
+
+```bash
+git clone
 ```
 
-That's all!
+Step 2: Compile and run the code
+Step 3: Your Jadis instance should be running on the standard Redis port (6379)
+Step 4: To test Jadis you can use the redis-cli. Jadis is mostly compatible with it (see What is supported)
 
-# Stage 2 & beyond
+## What is supported
 
-Note: This section is for stages 2 and beyond.
+### Commands
 
-1. Ensure you have `java (1.8)` installed locally
-1. Run `./spawn_redis_server.sh` to run your Redis server, which is implemented
-   in `src/main/java/Main.java`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+- ping
+- echo
+- set
+- get
+
+### Data types
+
+- Arrays
+- Simple strings
+- Simple errors
+- Bulk strings
+- Integers
+

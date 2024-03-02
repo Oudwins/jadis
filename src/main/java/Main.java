@@ -8,7 +8,9 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,7 +20,6 @@ public class Main {
     }
 
     private static void serverWithConcurrentEventLoop() {
-        Map<String, String> rStore = new HashMap<>();
         try {
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
             serverSocket.socket().bind(new InetSocketAddress(Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
@@ -77,8 +78,14 @@ public class Main {
                                     if (req.size() == 2) {
                                         String rKey = (String) req.removeFirst();
                                         String rValue = (String) req.removeFirst();
-                                        rStore.put(rKey, rValue);
+                                        Memory.set(rKey, rValue);
                                         res = Protocol.parseResponseSimple("OK");
+                                    } else if (req.size() == 4) {
+                                        String rKey = (String) req.removeFirst();
+                                        String rValue = (String) req.removeFirst();
+                                        String arg = (String) req.removeFirst();
+                                        Integer ms = (Integer) req.removeFirst();
+                                        Memory.set(rKey, rValue, ms);
                                     } else {
                                         res = Protocol.parseResponseError("Invalid number of arguments for set command");
                                     }
@@ -86,7 +93,7 @@ public class Main {
                                 case "get":
                                     if (req.size() == 1) {
                                         String rKey = (String) req.removeFirst();
-                                        res = Protocol.parseResponseString(rStore.get(rKey));
+                                        res = Protocol.parseResponse(Memory.get(rKey));
                                     } else {
                                         res = Protocol.parseResponseError("Invalid number of arguments for get command");
                                     }

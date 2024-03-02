@@ -35,6 +35,15 @@ public final class Protocol {
     private Protocol() {
     }
 
+    public static String parseResponse(Object res) {
+        if (res instanceof String) {
+            return parseResponseString((String) res);
+        } else if (res instanceof Integer) {
+            return parseResponseInteger((Integer) res);
+        }
+        return parseResponseError("Value type not implemented");
+    }
+
     public static String parseResponseString(String res) {
         if (res == null) {
             return "$-1" + TERMINATOR;
@@ -48,6 +57,10 @@ public final class Protocol {
 
     public static String parseResponseSimple(String s) {
         return "+" + s + TERMINATOR;
+    }
+
+    public static String parseResponseInteger(Integer i) {
+        return ":" + i.toString() + TERMINATOR;
     }
 
     public static ArrayList<Object> parseRequest(Rbuf buf) {

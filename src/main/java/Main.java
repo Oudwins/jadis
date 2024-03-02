@@ -84,7 +84,13 @@ public class Main {
                                         String rKey = (String) req.removeFirst();
                                         String rValue = (String) req.removeFirst();
                                         String arg = (String) req.removeFirst();
-                                        Integer ms = (Integer) req.removeFirst();
+                                        Integer ms = 0;
+                                        Object oMS = req.removeFirst();
+                                        if (oMS instanceof String) {
+                                            ms = Integer.parseInt((String) oMS);
+                                        } else if (oMS instanceof Integer) {
+                                            ms = (Integer) oMS;
+                                        }
                                         Memory.set(rKey, rValue, ms);
                                     } else {
                                         res = Protocol.parseResponseError("Invalid number of arguments for set command");

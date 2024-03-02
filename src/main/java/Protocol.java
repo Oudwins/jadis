@@ -36,9 +36,13 @@ public final class Protocol {
     }
 
     public static String parseResponse(Object res) {
+        if (res == null) {
+            return "$-1" + TERMINATOR;
+        }
         if (res instanceof String) {
             return parseResponseString((String) res);
-        } else if (res instanceof Integer) {
+        }
+        if (res instanceof Integer) {
             return parseResponseInteger((Integer) res);
         }
         return parseResponseError("Value type not implemented");

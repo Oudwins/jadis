@@ -10,14 +10,14 @@ public class Memory {
     }
 
     public static void set(String key, Object value, int expiresInMS) {
-        // add 50ms buffer
-        long expiresAt = System.currentTimeMillis() + expiresInMS + 50;
+        long expiresAt = System.currentTimeMillis() + expiresInMS;
         Expiry.put(key, expiresAt);
         set(key, value);
     }
 
     public static Object get(String key) {
         if (Expiry.containsKey(key) && keyHasExpired(key)) {
+
             Store.remove(key);
             Expiry.remove(key);
             return null;
@@ -26,6 +26,6 @@ public class Memory {
     }
 
     private static boolean keyHasExpired(String key) {
-        return System.currentTimeMillis() < Expiry.get(key);
+        return System.currentTimeMillis() > Expiry.get(key);
     }
 }

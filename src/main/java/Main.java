@@ -36,6 +36,7 @@ public class Main {
 
                     while (keys.hasNext()) {
                         SelectionKey key = keys.next();
+                        keys.remove();
                         if (key.isAcceptable()) {
                             SocketChannel client = serverSocket.accept();
                             System.out.println("Accepted connection from " + client);
@@ -55,7 +56,9 @@ public class Main {
                             buf.flip();
                             ByteBuffer buf2 = buf.duplicate();
                             String msg = StandardCharsets.UTF_8.decode(buf).toString();
-                            System.out.println("Your message was: " + msg);
+                            System.out.println("Your message was: ");
+                            System.out.println(msg);
+                            System.out.println("------");
                             ArrayList<Object> req = Protocol.parseRequest(new Rbuf(buf2));
                             System.out.println(req);
                             String cmd = ((String) req.removeFirst()).toLowerCase();
@@ -106,15 +109,11 @@ public class Main {
                                     }
                                     break;
                                 default:
-                                    System.out.println("GETS TO DEFAULT?");
                                     res = "-command not implemented\r\n";
                             }
 
                             client.write(ByteBuffer.wrap(res.getBytes(StandardCharsets.UTF_8)));
-                        } else if (key.isWritable()) {
-                            System.out.println("writable");
                         }
-                        keys.remove();
                     }
                 }
             }

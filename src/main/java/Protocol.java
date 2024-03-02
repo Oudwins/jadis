@@ -111,11 +111,8 @@ public final class Protocol {
     }
 
     public static String processBulkString(Rbuf buf) {
-        System.out.println(StandardCharsets.UTF_8.decode(buf.duplicate()).toString());
-        System.out.println(StandardCharsets.UTF_8.decode(buf.duplicate()).toString());
         final int chars = Integer.parseInt((new String(buf.readChunk())));
         // terminator
-        System.out.println("Attempting to read n chars: " + chars);
         byte[] sbytes = new byte[chars];
         buf.get(sbytes, 0, chars);
         String s = Rencoder.decode(sbytes);

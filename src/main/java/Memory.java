@@ -10,7 +10,8 @@ public class Memory {
     }
 
     public static void set(String key, Object value, int expiresInMS) {
-        long expiresAt = System.currentTimeMillis() + expiresInMS;
+        // add 50ms buffer
+        long expiresAt = System.currentTimeMillis() + expiresInMS + 50;
         Expiry.put(key, expiresAt);
         set(key, value);
     }

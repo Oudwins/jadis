@@ -43,19 +43,16 @@ public final class Config {
     }
 
     public static ArrayList<String> get(String key) {
+        ArrayList<String> l = new ArrayList<>();
         switch (key) {
             case "dir":
-                ArrayList<String> l = new ArrayList<>();
                 l.add("dir");
                 l.add(DIR);
                 return l;
-            break;
             case "dbfilename":
-                ArrayList<String> l = new ArrayList<>();
                 l.add("dbfilename");
                 l.add(DB_FILE_NAME);
                 return l;
-            break;
             default:
                 return null;
         }

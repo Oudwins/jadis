@@ -123,6 +123,7 @@ public class Main {
                                     } else {
                                         res = Protocol.parseResponseError("Invalid config argument number");
                                     }
+                                    break;
                                 default:
                                     res = "-command not implemented\r\n";
                             }

@@ -8,10 +8,10 @@ public final class Rencoder {
         if (s == null) {
             throw new IllegalArgumentException("null string");
         }
-        return s.getBytes(Protocol.DEFAULT_CHARSET);
+        return s.getBytes(Config.CHARSET);
     }
 
     public static String decode(byte[] data) {
-        return new String(data, Protocol.DEFAULT_CHARSET);
+        return new String(data, Config.CHARSET);
     }
 }

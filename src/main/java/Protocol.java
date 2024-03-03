@@ -1,17 +1,9 @@
 import com.sun.jdi.request.InvalidRequestStateException;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 
 public final class Protocol {
-    //    int version;
-    public static final String DEFAULT_HOST = "localhost";
-    public static final int DEFAULT_PORT = 6379;
-    //    public static final int DEFAULT_TIMEOUT = 2000;
-    public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    public static final int DEFAULT_MAX_BULK_STRING_BYTES = 512 * 1000;
 
     // PROTOCOL CHARACTERS
     public static final byte DOLLAR_BYTE = '$';
@@ -45,7 +37,20 @@ public final class Protocol {
         if (res instanceof Integer) {
             return parseResponseInteger((Integer) res);
         }
+        if (res instanceof ArrayList<?>) {
+            return parseResponseArray((ArrayList<?>) res);
+        }
         return parseResponseError("Value type not implemented");
+    }
+
+    public static String parseResponseArray(ArrayList<?> l) {
+        String res = "*" + (l.isEmpty() ? "-1" : l.size()) + TERMINATOR;
+
+        for (int i = 0; i < l.size(); i++) {
+            Object v = (Object) l.get(i);
+            res = res.concat(parseResponse(v));
+        }
+        return res;
     }
 
     public static String parseResponseString(String res) {

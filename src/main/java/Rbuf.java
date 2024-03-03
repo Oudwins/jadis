@@ -3,7 +3,7 @@ import java.nio.ByteBuffer;
 
 public class Rbuf {
     ByteBuffer buf;
-    public static final byte[] TERMINATOR = "\r\n".getBytes(Protocol.DEFAULT_CHARSET);
+    public static final byte[] TERMINATOR = "\r\n".getBytes(Config.CHARSET);
 
     public Rbuf(ByteBuffer buf) {
         this.buf = buf;

@@ -15,14 +15,14 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
-        System.out.println("Logs from your program will appear here!");
+        Config.setUp(args);
         serverWithConcurrentEventLoop();
     }
 
     private static void serverWithConcurrentEventLoop() {
         try {
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
-            serverSocket.socket().bind(new InetSocketAddress(Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
+            serverSocket.socket().bind(new InetSocketAddress(Config.HOST, Config.PORT));
             serverSocket.configureBlocking(false);
 
             Selector selector = Selector.open();
@@ -44,7 +44,7 @@ public class Main {
                             client.register(selector, SelectionKey.OP_READ);
                         } else if (key.isReadable()) {
                             SocketChannel client = (SocketChannel) key.channel();
-                            ByteBuffer buf = ByteBuffer.allocate(Protocol.DEFAULT_MAX_BULK_STRING_BYTES);
+                            ByteBuffer buf = ByteBuffer.allocate(Config.MAX_BULK_STRING_BYTES);
                             int bytesRead = client.read(buf);
                             if (bytesRead == -1) {
                                 System.out.println("Something went wrong");
@@ -108,6 +108,21 @@ public class Main {
                                         res = Protocol.parseResponseError("Invalid number of arguments for get command");
                                     }
                                     break;
+                                case "config":
+                                    if (req.size() == 2) {
+                                        String operation = ((String) req.removeFirst()).toLowerCase();
+                                        String ckey = (String) req.removeFirst();
+                                        switch (operation) {
+                                            case "get":
+                                                ArrayList<String> l = Config.get(ckey);
+                                                res = Protocol.parseResponse(l);
+                                                break;
+                                            default:
+                                                res = Protocol.parseResponseError("Invalid Config Operation");
+                                        }
+                                    } else {
+                                        res = Protocol.parseResponseError("Invalid config argument number");
+                                    }
                                 default:
                                     res = "-command not implemented\r\n";
                             }
@@ -125,8 +140,8 @@ public class Main {
     private static void serverWithoutConcurrency() {
 
         try {
-            ServerSocket serverSocket = new ServerSocket(Protocol.DEFAULT_PORT);
-            System.out.println("TCP Echo Server is running on port " + Protocol.DEFAULT_PORT);
+            ServerSocket serverSocket = new ServerSocket(Config.PORT);
+            System.out.println("TCP Echo Server is running on port " + Config.PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected: " + clientSocket);
